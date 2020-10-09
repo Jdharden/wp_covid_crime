@@ -1,0 +1,318 @@
+---
+title: "Crime During the Pandemic: An analysis by The Washington Post"
+author: "John D. Harden"
+date: "2020-10-01"
+output: 
+  md_document:
+  variant: markdown_github
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Unraviling Crime Patterns During the Pandemic
+
+Data collection from several cities across the country beginning in mid-March. Early on during the pandemic – it was reported that crime had dropped in several cities when stay-at-home orders were enacted. And early on crime did fall. Further test however revealed several patterns within the data and datasets were cleaned. The Post selected 27 cities to create an aggregated rate of major crimes across the nation which includes rape, robbery, homicide, burglary, auto theft and theft from vehicle. Data shows an overall drop in crime in March through early May. More cities will be added throughout the year as data become available. 
+
+Those 27 cities collectively saw the daily rate of crime on a rolling 21-day rate drop from 280 crimes per 100,000 to about 230 crimes per 100,000 people. The decrease was largely fueled by a decrease in property-related crimes like simple theft, theft from cars and burglary. 
+
+But new patterns emerged in May – a period marked by the death of George Floyd and the lifting of stay-at-home orders, both which criminal experts say may or may not be related to recent crimes patterns. But since then, crime -- particularly violent crime -- grew. The data was collected via open web portals from each respective city. The data was then cleaned and standardized using R and UCR definitions for violent and property crimes. More than 800,000 reported crimes were collected from 2020. 
+
+An additional two million crimes were collected for years 2018 and 2019 to compare current crime trends. The rolling 21-day average is calculated by dividing crimes majority white or black tract population. The overall rate was created by dividing all crimes by combined population of each city. The rates for majority Asian, Black, Latino and White neighborhoods were created totaling the populations of each Census tract with a majority racial group present and then dividing crimes by the extracted total population figures. 
+
+The data was collected via open web portals from each city. It was standardized using the statistical program R and UCR definitions to categorize violent and property crimes.
+
+More than 800,000 reported crimes were collected from 2020. An additional 2.2 million crimes were collected for 2018 and 2019 to compare trends and create a yearly average. The crimes were geocoded to Census tracts and merged with data on demographics.
+
+A rolling 21-day average was calculated by dividing the total crimes in neighborhoods with a majority Asian, Black, Latino or White population by the sum population of those Census tracts. The location of some crimes like sexual assaults or homicides were suppressed to protect a victim’s privacy or because the crime was still under investigation, bringing small limitations to the data.
+
+````{r load_libraries, echo=FALSE, message=FALSE, warning=FALSE}
+library("tidyverse")
+library("lubridate")
+library("vroom")
+library("RcppRoll")
+````
+
+```{r load_data, echo=FALSE, message=FALSE, warning=FALSE}
+
+city_database <- vroom("~/Desktop/crime_downloads/processed_files/nine_major_18_20.csv")
+city_pop  <- read_csv("~/Desktop/crime_post/data/city_population.csv")
+
+cities <- c("atlanta","austin","baltimore","baton_rouge","boston","chicago","cincinnati",
+       "dallas","dc","denver","detroit","kc_mo","la","little_rock","milwaukee", "montgomery_al",
+       "nashville","new_orleans","omaha","philly","pitts","portland","san_f","seattle",
+       "tacoma","memphis","st_louis")
+
+all_cities <- city_database  %>%
+  rename(city = key) %>%
+  group_by(date, city) %>%
+  filter(date <= as.Date("2020-05-20")) %>% 
+  filter(date >= as.Date("2018-01-01")) %>%
+  ## change year to character for graphing purpose
+  tally() %>%
+  group_by(city, date) %>%
+  summarise(
+    total_crimes = sum(n)
+  ) 
+
+all_cities_scales <- all_cities %>%
+  filter(city %in% cities) %>% 
+  ##spreading dates to avoid missing dates for cities
+  spread(city, total_crimes) %>% replace(is.na(.), 0) %>%
+  gather(atlanta, baltimore, baton_rouge, boston, chicago, cincinnati, dallas, dc, detroit, 
+        kc_mo, la, little_rock, memphis, milwaukee, montgomery_al, nashville, new_orleans, omaha, philly, 
+        pitts, san_f, seattle, tacoma, austin, portland, denver, st_louis, key = "city", value = "total_crimes") %>%
+  inner_join(city_pop, by = "city") %>%
+  group_by(date) %>%
+  summarise(total_crimes = sum(total_crimes),
+            total_populations = sum(total_pop),
+            ) %>%
+  ungroup() %>%
+  mutate(
+    ## create rolling 10 day rate
+    rolling_sum = roll_sum(total_crimes, 21, align = "right", fill = NA),
+    rolling_avg = roll_mean(rolling_sum, 21, align = "right", fill = NA),
+    three_week_rate = (rolling_avg/total_populations)*100000,
+    year = year(date),
+    year = as.character(year)
+  ) 
+
+
+```
+# Overall Crime Rate: How crime unfolded during the pandemic 
+
+Crimes began to dip in March. Figure.1 shows that dip which corresponds to a period in which businesses closed their doors, schools taught virtually and many workers were asked to work from home. 
+
+```{r absolute_crime, message=FALSE, warning=FALSE}
+absolute <- all_cities_scales %>%  
+  ggplot() +
+  aes(x = date, y = three_week_rate, color = year) +
+  geom_step() +
+  theme_minimal() +
+  labs(
+    title = "Rolling Rate Per 100k Residents",
+    subtitle = " ",
+    caption = "John D. Harden / The Washington Post",
+    x = "Rate per 100k",
+    y = "Date"
+  ) + 
+  theme(legend.position = "top")
+
+absolute
+```
+
+#### Granular Crime Rates: Crime in neighborhoods of color
+Crime models revealed a disparity between majority Black and majority White neighborhoods -- particularly violent crime. A Washington Post analysis of crime data showed that the disparity grew by more than 100 percent during the pandemic. 
+
+```{r granular_data, message=FALSE, warning=FALSE, include=FALSE}
+crime_analysis  <- vroom("~/Desktop/crime_downloads/processed_files/crime_analysis_18_20.csv")
+neigh_populations <- read_csv("~/Desktop/crime_downloads/processed_files/keys/majority_populations.csv")
+violent_crime <- c("agg_assault","homicide","rape","sexual_assault","robbery")
+property_crime <- c("arson","auto_theft","burglary","theft","theft_from_vehicle")
+
+```
+
+```{r granular, echo=FALSE, message=FALSE, warning=FALSE}
+#scaling black communities
+black_communities <- crime_analysis %>%
+  filter(date <= as.Date("2020-08-23")) %>%
+  filter(key %in% cities) %>%
+  rename(clean_crime = clean_crim, city = key) %>%
+  group_by(city, date, week = week(date), geo_area, clean_crime, 
+           blk_majority_neigh = `black_%` > 50, 
+           ) %>%
+  filter(clean_crime %in% violent_crime) %>%
+  filter(blk_majority_neigh != "FALSE") %>%
+  tally() %>%
+  group_by(city, date) %>%
+  inner_join(neigh_populations, by = "city") %>% 
+  summarise(
+    crimes_collapsed = sum(n)
+    )
+
+### agg_crimes black communities
+black_scaled <- black_communities %>%
+  spread(city, crimes_collapsed) %>%
+  replace(is.na(.), 0) %>%
+  gather(atlanta, baltimore, baton_rouge, boston, chicago, cincinnati, dallas, dc, detroit, 
+         kc_mo, la, little_rock, memphis, milwaukee, montgomery_al, nashville, new_orleans, omaha, philly, 
+         pitts, san_f, st_louis, key = "city", value = "crimes") %>%
+  inner_join(neigh_populations, by = "city") %>%
+  group_by(date) %>%
+  summarise(crimes = sum(crimes), 
+            blk = sum(blk)) %>% 
+  arrange(date) %>%
+  mutate(
+    rolling_sum = roll_sum(crimes, 21, align = "right", fill = NA),
+    rolling_avg = roll_mean(rolling_sum, 21, align = "right", fill = NA),
+    three_week_rate = (rolling_sum/blk)*100000, 
+    year = year(date),
+    year = as.character(year),
+  ) %>%
+  filter(year >= "2018") 
+
+
+### create scaled version
+white_communities <- crime_analysis %>%
+  filter(date <= as.Date("2020-08-23")) %>%
+  filter(key %in% cities) %>%
+  rename(clean_crime = clean_crim, city = key) %>%
+  group_by(city, date, week = week(date), geo_area, clean_crime,
+           white_majority_neigh = `white_%` > 50
+           ) %>%
+  filter(clean_crime %in% violent_crime) %>%
+  filter(white_majority_neigh != "FALSE") %>%
+  tally() %>%
+  group_by(city, date) %>%
+  summarise(
+    crimes_collapsed = sum(n),
+  ) 
+
+## scales agg for white communities
+white_scaled <- white_communities %>%
+  spread(city, crimes_collapsed) %>%
+  replace(is.na(.), 0) %>%
+  gather(atlanta, baltimore, baton_rouge, boston, chicago, cincinnati, dallas, dc, detroit, 
+         kc_mo, la, little_rock, memphis, milwaukee, montgomery_al, nashville, new_orleans, omaha, philly, 
+         pitts, san_f, seattle, tacoma, austin, portland, denver, st_louis, key = "city", value = "crimes") %>%
+  inner_join(neigh_populations, by = "city") %>%
+  group_by(date) %>%
+  summarise(crimes = sum(crimes), 
+            white = sum(white)) %>% 
+  arrange(date) %>%
+  mutate(
+    rolling_sum = roll_sum(crimes, 21, align = "right", fill = NA),
+    rolling_avg = roll_mean(rolling_sum, 21, align = "right", fill = NA),
+    three_week_rate = (rolling_sum/white)*100000, 
+    year = year(date),
+    year = as.character(year),
+  ) %>%
+  filter(year >= "2018")
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, echo=FALSE}
+
+library(viridis)
+
+compare_race <- ggplot() +
+  geom_step(data = black_scaled, aes(x = date, y = three_week_rate, color = "African_American",)) +
+  geom_step(data = white_scaled, aes(x = date, y = three_week_rate, color = "White")) + 
+  theme(legend.position = "top") +
+  labs(
+    title = "Violent Crime During the Pandemic",
+    subtitle = "Rates calculated by geocoding more than 3 million reported crimes",
+    y = "Crimes per 100,000",
+    x = "Date"
+  )
+
+compare_race
+
+```
+
+#### A Look at Violent Crime
+Homicide rates grew faster than most crime rates among the 27 analyzed by the Post. Here's the aggregated rate of homicides among the 27 cities.  
+
+```{r violent, include=FALSE}
+all_cities_homicide <- city_database  %>%
+  rename(city = key) %>%
+  group_by(date, city, clean_crime) %>%
+  filter(date <= as.Date("2020-07-31")) %>% 
+  filter(date >= as.Date("2018-01-01")) %>%
+  ## change year to character for graphing purpose
+  tally() %>%
+  group_by(city, date, clean_crime) %>%
+  summarise(
+    total_crimes = sum(n)
+  ) 
+
+```
+
+```{r homicide_graph, echo=FALSE, message=FALSE, warning=FALSE}
+all_cities_scales <- all_cities_homicide %>%
+  filter(city %in% cities) %>%
+  spread(city, total_crimes) %>%
+  replace(is.na(.), 0) %>%
+  gather(atlanta, baltimore, baton_rouge, boston, chicago, cincinnati, dallas, dc, detroit,
+        kc_mo, la, little_rock, memphis, milwaukee, montgomery_al, nashville, new_orleans, omaha, philly, pitts, san_f, seattle, tacoma, austin, portland, denver, st_louis, key = "city", value = "total_crimes") %>%
+  inner_join(city_pop, by = "city") %>%
+  filter(clean_crime == "homicide") %>%
+  group_by(date) %>%
+  summarise(total_crimes = sum(total_crimes),
+            total_populations = sum(total_pop),
+            ) %>%
+  ungroup() %>%
+  mutate(
+    ## create rolling 10 day rate
+    avg_homicides = roll_mean(total_crimes, 21, align = "right", fill = NA),
+    year = year(date),
+    year = as.character(year)
+  ) 
+
+absolute_homicides <- all_cities_scales %>%  
+  ggplot() +
+  aes(x = date, y = avg_homicides, color = year) +
+  geom_step() +
+  theme_minimal() +
+  labs(
+    title = "Average homicides per day across 27 U.S. cities",
+    subtitle = "Data collected from 2018 through Aug. 2020",
+    x = "Date",
+    y = "Average Homicides"
+  ) + 
+  theme(legend.position = "top")
+
+absolute_homicides
+```
+
+#### Case Studies: Chicago, L.A. St. Louis and Dallas
+
+You can also embed plots, for example:
+
+```{r case_studies, echo=FALSE}
+all_cities_scales <- all_cities_homicide %>%
+  filter(city %in% cities) %>%
+  spread(city, total_crimes) %>%
+  replace(is.na(.), 0) %>%
+  gather(atlanta, baltimore, baton_rouge, boston, chicago, cincinnati, dallas, dc, detroit,
+        kc_mo, la, little_rock, memphis, milwaukee, montgomery_al, nashville, new_orleans, omaha, philly, pitts, san_f, seattle, tacoma, austin, portland, denver, st_louis, key = "city", value = "total_crimes") %>%
+  inner_join(city_pop, by = "city") %>%
+  filter(city %in% c("chicago","milwaukee","st_louis", "dc")) %>%
+  filter(clean_crime == "homicide") %>%
+  group_by(city, date) %>%
+  summarise(total_crimes = sum(total_crimes),
+            total_populations = sum(total_pop),
+            ) %>%
+  ungroup() %>%
+  mutate(
+    ## create rolling 10 day rate
+    avg_homicides = roll_mean(total_crimes, 21, align = "right", fill = NA),
+    year = year(date),
+    year = as.character(year)
+  ) %>%
+  filter(year >= "2020")
+
+absolute_homicides <- all_cities_scales %>%  
+  ggplot() +
+  aes(x = date, y = avg_homicides, color = year) +
+  geom_step() +
+  theme_minimal() +
+  labs(
+    title = "Average Homicides Per Day Using 21 Day Rolling Average",
+    subtitle = "A snapshot of homicides in Chicago, Milwaukee and St. Louis",
+    caption = "John D. Harden / The Washington Post",
+    x = "Rate per 100k",
+    y = "Date",
+    tag = "Figure 4"
+  ) +
+  facet_grid(rows = vars(city), scales = "free_y") + 
+  theme(legend.position = "top")
+
+absolute_homicides
+```
+
+### Limitations of data
+
+The data is based on data collected from open data portals from respective cities. Police departments from each city ... In a few cities, the longitude or latitudes are suppressed for some crimes that include rape and sexual assault and pending homicide investigations. Police departments suggest independent verification of crimes for complete accuracy of the reporting process.
+
+
