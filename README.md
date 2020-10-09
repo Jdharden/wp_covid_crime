@@ -82,7 +82,7 @@ White neighborhoods – particularly violent crime. A Washington Post
 analysis of crime data showed that the disparity grew by more than 100
 percent during the pandemic.
 
-![](github_test_files/figure-markdown_strict/unnamed-chunk-1-1.png)
+![](wp_covid_crime/output_images/unnamed-chunk-1-1.png)
 
 #### A Look at Violent Crime
 
@@ -90,7 +90,7 @@ Homicide rates grew faster than most crime rates among the 27 analyzed
 by the Post. Here’s the aggregated rate of homicides among the 27
 cities.
 
-![](github_test_files/figure-markdown_strict/homicide_graph-1.png)
+![](wp_covid_crime/output_images/homicide_graph-1.png)
 
 #### Case Studies: Chicago, L.A. St. Louis and Dallas
 
@@ -98,7 +98,7 @@ You can also embed plots, for example:
 
     ## `summarise()` regrouping output by 'city' (override with `.groups` argument)
 
-![](github_test_files/figure-markdown_strict/case_studies-1.png)
+![](wp_covid_crime/output_images/case_studies-1.png)
 
 ### Limitations of data
 
