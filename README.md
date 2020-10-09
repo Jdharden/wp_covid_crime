@@ -73,7 +73,7 @@ virtually and many workers were asked to work from home.
 
     absolute
 
-![](github_test_files/figure-markdown_strict/absolute_crime-1.png)
+![](https://github.com/Jdharden/wp_covid_crime/blob/master/output_images/absolute_crime-1.png?raw=true)
 
 #### Granular Crime Rates: Crime in neighborhoods of color
 
@@ -82,7 +82,7 @@ White neighborhoods – particularly violent crime. A Washington Post
 analysis of crime data showed that the disparity grew by more than 100
 percent during the pandemic.
 
-![](wp_covid_crime/output_images/unnamed-chunk-1-1.png)
+![](https://github.com/Jdharden/wp_covid_crime/blob/master/output_images/unnamed-chunk-1-1.png?raw=true)
 
 #### A Look at Violent Crime
 
@@ -90,7 +90,7 @@ Homicide rates grew faster than most crime rates among the 27 analyzed
 by the Post. Here’s the aggregated rate of homicides among the 27
 cities.
 
-![](wp_covid_crime/output_images/homicide_graph-1.png)
+![](https://github.com/Jdharden/wp_covid_crime/blob/master/output_images/homicide_graph-1.png?raw=true)
 
 #### Case Studies: Chicago, L.A. St. Louis and Dallas
 
@@ -98,7 +98,7 @@ You can also embed plots, for example:
 
     ## `summarise()` regrouping output by 'city' (override with `.groups` argument)
 
-![](wp_covid_crime/output_images/case_studies-1.png)
+![](https://github.com/Jdharden/wp_covid_crime/blob/master/output_images/case_studies-1.png?raw=true)
 
 ### Limitations of data
 
