@@ -103,7 +103,7 @@ You can also embed plots, for example:
 ### Limitations of data
 
 The data is based on data collected from open data portals from
-respective cities. Police departments from each city … In a few cities,
+respective cities. Police departments from each city encourage infependent verification of data. In a few cities,
 the longitude or latitudes are suppressed for some crimes that include
 rape and sexual assault and pending homicide investigations. Police
 departments suggest independent verification of crimes for complete
