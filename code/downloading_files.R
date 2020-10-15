@@ -1,0 +1,140 @@
+## location of all files minus Atlanta and Houston
+
+#austin    
+download.file("https://data.austintexas.gov/api/views/fdj4-gpfu/rows.csv?accessType=DOWNLOAD", 
+              "austin.csv")
+#baltimore
+download.file("https://data.baltimorecity.gov/api/views/wsfq-mvij/rows.csv", 
+              "baltimore.csv")
+#boston
+download.file("https://data.boston.gov/dataset/6220d948-eae2-4e4b-8723-2dc8e67722a3/resource/12cb3883-56f5-47de-afa5-3b1cf61b257b/download/tmptkyogvup.csv", 
+              "boston.csv")
+#chicago
+download.file("https://data.cityofchicago.org/api/views/ijzp-q8t2/rows.csv", 
+              "chicago.csv")
+#cincinnati
+download.file("https://data.cincinnati-oh.gov/api/views/k59e-2pvf/rows.csv", 
+              "cincinnati.csv")
+#dallas
+download.file("https://www.dallasopendata.com/api/views/qv6i-rri7/rows.csv?accessType=DOWNLOAD", 
+              "dallas.csv")
+#dc
+download.file("https://opendata.arcgis.com/datasets/f516e0dd7b614b088ad781b0c4002331_2.csv", 
+              "dc.csv")
+download.file("https://opendata.arcgis.com/datasets/f08294e5286141c293e9202fcd3e8b57_1.csv", 
+              "dc_2019.csv")
+download.file("https://opendata.arcgis.com/datasets/38ba41dd74354563bce28a359b59324e_0.csv", 
+              "dc_2018.csv")
+#denver
+download.file("https://www.denvergov.org/media/gis/DataCatalog/crime/csv/crime.csv", 
+              "denver.csv")
+#detroit
+download.file("https://opendata.arcgis.com/datasets/0825badfe6304620a998d162be0e135e_0.csv", 
+              "detroit.csv")
+#fort_worth
+download.file("https://data.fortworthtexas.gov/api/views/k6ic-7kp7/rows.csv", 
+              "fortworth.csv")
+#kc_mo 
+download.file("https://data.kcmo.org/api/views/vsgj-uufz/rows.csv", 
+              "kc_mo.csv")
+download.file("https://data.kcmo.org/api/views/dmjw-d28i/rows.csv", 
+              "kc_mo18.csv")
+download.file("https://data.kcmo.org/api/views/pxaa-ahcm/rows.csv", 
+              "kc_mo19.csv")
+#la
+download.file("https://data.lacity.org/api/views/2nrs-mtv8/rows.csv", 
+              "la_2020.csv")
+download.file("https://data.lacity.org/api/views/63jg-8b9z/rows.csv", 
+              "la_2018_19.csv")
+#litte_rock
+download.file("https://data.littlerock.gov/api/views/bz82-34ep/rows.csv", 
+              "little_rock.csv")
+#montgomery_county
+download.file("https://data.montgomerycountymd.gov/api/views/icn6-v9z3/rows.csv", 
+              "montgomery.csv")
+#nashville
+download.file("https://data.nashville.gov/api/views/2u6v-ujjs/rows.csv?accessType=DOWNLOAD", 
+              "nashville.csv")
+#nola
+download.file("https://data.nola.gov/api/views/hp7u-i9hf/rows.csv", 
+              "nola.csv")
+download.file("https://data.nola.gov/api/views/9san-ivhk/rows.csv", 
+              "nola18.csv")
+download.file("https://data.nola.gov/api/views/qf6q-pp4b/rows.csv", 
+              "nola19.csv")
+#nyc
+download.file("https://data.cityofnewyork.us/api/views/5uac-w243/rows.csv", 
+              "nyc.csv")
+download.file("https://data.cityofnewyork.us/api/views/qgea-i56i/rows.csv", 
+              "nyc18_19.csv")
+
+#oakland -- downloads last 60-90 days, keep before and after 
+download.file("https://data.oaklandnet.com/api/views/ym6k-rx7a/rows.csv", 
+              "oakland1.csv")
+#omaha
+download.file("https://police-static.cityofomaha.org/crime-data/2020/Incidents_2020.csv", 
+              "omaha.csv")
+download.file("https://police-static.cityofomaha.org/crime-data/2018/Incidents_2018.csv", 
+              "omaha18.csv")
+download.file("https://police-static.cityofomaha.org/crime-data/2019/Incidents_2019.csv", 
+              "omaha19.csv")
+#pg_county
+download.file("https://data.princegeorgescountymd.gov/api/views/wb4e-w4nf/rows.csv", 
+              "pg_county.csv")
+#philly
+download.file("https://phl.carto.com/api/v2/sql?filename=incidents_part1_part2&format=csv&skipfields=cartodb_id,the_geom,the_geom_webmercator&q=SELECT%20*%20,%20ST_Y(the_geom)%20AS%20lat,%20ST_X(the_geom)%20AS%20lng%20FROM%20incidents_part1_part2%20WHERE%20dispatch_date_time%20%3E=%20%272020-01-01%27%20AND%20dispatch_date_time%20%3C%20%272021-01-01%27", 
+              "philly.csv")
+download.file("https://phl.carto.com/api/v2/sql?filename=incidents_part1_part2&format=csv&skipfields=cartodb_id,the_geom,the_geom_webmercator&q=SELECT%20*%20,%20ST_Y(the_geom)%20AS%20lat,%20ST_X(the_geom)%20AS%20lng%20FROM%20incidents_part1_part2%20WHERE%20dispatch_date_time%20%3E=%20%272019-01-01%27%20AND%20dispatch_date_time%20%3C%20%272020-01-01%27", 
+              "philly19.csv")
+download.file("https://phl.carto.com/api/v2/sql?filename=incidents_part1_part2&format=csv&skipfields=cartodb_id,the_geom,the_geom_webmercator&q=SELECT%20*%20,%20ST_Y(the_geom)%20AS%20lat,%20ST_X(the_geom)%20AS%20lng%20FROM%20incidents_part1_part2%20WHERE%20dispatch_date_time%20%3E=%20%272018-01-01%27%20AND%20dispatch_date_time%20%3C%20%272019-01-01%27", 
+              "philly18.csv")
+#seattle
+download.file("https://data.seattle.gov/api/views/tazs-3rd5/rows.csv", 
+              "seattle.csv")
+#sf
+download.file("https://data.sfgov.org/api/views/wg3w-h783/rows.csv", 
+              "sf.csv")
+#portland
+download.file("https://public.tableau.com/views/PPBOpenDataDownloads/CrimeData-2020.csv?:showVizHome=no", 
+              "portland.csv")
+download.file("https://public.tableau.com/views/PPBOpenDataDownloads/CrimeData-2018.csv?:showVizHome=no", 
+              "portland2018.csv")
+download.file("https://public.tableau.com/views/PPBOpenDataDownloads/CrimeData-2019.csv?:showVizHome=no", 
+              "portland2019.csv")
+#minneapolis
+download.file("https://opendata.arcgis.com/datasets/35c7de976a60450bb894fc7aeb68aef6_0.csv", 
+              "minneapolis.csv")
+download.file("https://opendata.arcgis.com/datasets/055e662af18c4488b54dcbd496f897b7_0.csv", 
+              "minneapolis18.csv")
+download.file("https://opendata.arcgis.com/datasets/8cd15449ac344aa5a55be7840d67c52d_0.csv", 
+              "minneapolis19.csv")
+#tacoma 
+download.file("https://data.cityoftacoma.org/api/views/wtqi-kpsn/rows.csv", 
+              "tacoma.csv")
+#batonrouge
+download.file("https://data.brla.gov/api/views/fabb-cnnu/rows.csv?accessType=DOWNLOAD", 
+              "batonrouge.csv")
+#phoenix -- needs geocoding
+download.file("https://www.phoenixopendata.com/dataset/cc08aace-9ca9-467f-b6c1-f0879ab1a358/resource/0ce3411a-2fc6-4302-a33f-167f68608a20/download/crimestat.csv", 
+              "phoenix.csv")
+#mongomery_al
+download.file("https://opendata.arcgis.com/datasets/f43b4d1fd1cb4ee5a6a144581174cb41_0.csv", 
+              "montgomery_al.csv")
+#memphis
+download.file("https://memphisinternal.data.socrata.com/api/views/ybsi-jur4/rows.csv", 
+              "memphis.csv")
+#pitts
+download.file("https://data.wprdc.org/datastore/dump/044f2016-1dfd-4ab0-bc1e-065da05fca2e?q=&sort=INCIDENTTIME+desc&fields=PK%2CCCR%2CHIERARCHY%2CINCIDENTTIME%2CINCIDENTLOCATION%2CCLEAREDFLAG%2CINCIDENTNEIGHBORHOOD%2CINCIDENTZONE%2CINCIDENTHIERARCHYDESC%2COFFENSES%2CINCIDENTTRACT%2CCOUNCIL_DISTRICT%2CPUBLIC_WORKS_DIVISION%2CX%2CY&filters=%7B%7D&format=csv", 
+              "pitts1.csv")
+download.file("https://data.wprdc.org/datastore/dump/1797ead8-8262-41cc-9099-cbc8a161924b?q=&sort=_id+asc&fields=PK%2CCCR%2CHIERARCHY%2CINCIDENTTIME%2CINCIDENTLOCATION%2CCLEAREDFLAG%2CINCIDENTNEIGHBORHOOD%2CINCIDENTZONE%2CINCIDENTHIERARCHYDESC%2COFFENSES%2CINCIDENTTRACT%2CCOUNCIL_DISTRICT%2CPUBLIC_WORKS_DIVISION%2CX%2CY&filters=%7B%7D&format=csv", 
+              "pitts2.csv")
+#vegas
+download.file("https://opendata.arcgis.com/datasets/a1a48acba1af422e8351161655982d5a_0.csv", 
+              "vegas.csv")
+#milwaukee
+download.file("https://data.milwaukee.gov/dataset/e5feaad3-ee73-418c-b65d-ef810c199390/resource/87843297-a6fa-46d4-ba5d-cb342fb2d3bb/download/wibr.csv", 
+              "milwaukee2020.csv")
+download.file("https://data.milwaukee.gov/dataset/5a537f5c-10d7-40a2-9b93-3527a4c89fbd/resource/395db729-a30a-4e53-ab66-faeb5e1899c8/download/wibrarchive.csv", 
+              "milwaukee18_19.csv")
+
+
